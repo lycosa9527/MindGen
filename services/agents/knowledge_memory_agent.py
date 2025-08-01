@@ -5,6 +5,7 @@ from typing import Dict, Any, List
 from langchain.agents import AgentExecutor, create_openai_functions_agent
 from langchain.tools import Tool
 from langchain.memory import ConversationBufferMemory
+from langchain.prompts import PromptTemplate
 from ..llm_service import LangChainLLMService
 
 logger = logging.getLogger(__name__)
@@ -44,9 +45,11 @@ class KnowledgeMemoryAgent:
             )
         ]
         
-        # Create agent
+        # Create agent with configurable fallback LLM
+        agent_llm = self.llm_service.get_agent_llm()
+        
         self.agent = create_openai_functions_agent(
-            llm=self.llm_service.llms['gpt4o'],
+            llm=agent_llm,
             tools=self.tools,
             prompt=self._get_agent_prompt()
         )
@@ -137,7 +140,7 @@ class KnowledgeMemoryAgent:
     
     def _get_agent_prompt(self):
         """Get agent system prompt"""
-        return """
+        template = """
         You are an expert knowledge and memory manager. Your role is to:
         1. Query curriculum standards and educational resources
         2. Retrieve relevant best practices and teaching methodologies
@@ -146,7 +149,13 @@ class KnowledgeMemoryAgent:
         5. Maintain organized and accessible knowledge base
         
         Use the available tools to support educational planning effectively.
+        
+        {agent_scratchpad}
         """
+        return PromptTemplate(
+            template=template,
+            input_variables=["agent_scratchpad"]
+        )
     
     # Tool implementations
     def _query_curriculum_standards(self, query: str) -> str:

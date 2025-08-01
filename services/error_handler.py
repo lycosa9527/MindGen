@@ -86,12 +86,12 @@ class ErrorHandler:
     def _implement_fallback(self, model_name: str, error_info: Dict[str, Any]) -> Dict[str, Any]:
         """Implement fallback strategy for LLM failures"""
         fallback_models = {
-            'qwen': 'gpt4o',
+            'qwen': 'personal_chatgpt',
             'deepseek': 'qwen',
-            'gpt4o': 'deepseek'
+            'personal_chatgpt': 'deepseek'
         }
         
-        fallback_model = fallback_models.get(model_name, 'gpt4o')
+        fallback_model = fallback_models.get(model_name, 'personal_chatgpt')
         
         return {
             'status': 'fallback',

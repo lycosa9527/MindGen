@@ -5,6 +5,7 @@ from typing import Dict, Any, List
 from langchain.agents import AgentExecutor, create_openai_functions_agent
 from langchain.tools import Tool
 from langchain.memory import ConversationBufferMemory
+from langchain.prompts import PromptTemplate
 from ..llm_service import LangChainLLMService
 
 logger = logging.getLogger(__name__)
@@ -44,9 +45,11 @@ class CrossAnalysisAgent:
             )
         ]
         
-        # Create agent
+        # Create agent with configurable fallback LLM
+        agent_llm = self.llm_service.get_agent_llm()
+        
         self.agent = create_openai_functions_agent(
-            llm=self.llm_service.llms['gpt4o'],
+            llm=agent_llm,
             tools=self.tools,
             prompt=self._get_agent_prompt()
         )
@@ -62,7 +65,7 @@ class CrossAnalysisAgent:
         """Analyze teaching plans cross-model"""
         analysis_reports = {}
         
-        for analyst_model in ['qwen', 'deepseek', 'gpt4o']:
+        for analyst_model in ['qwen', 'deepseek', 'personal_chatgpt']:
             try:
                 start_time = time.time()
                 
@@ -175,7 +178,7 @@ class CrossAnalysisAgent:
     
     def _get_agent_prompt(self):
         """Get agent system prompt"""
-        return """
+        template = """
         You are an expert educational analyst. Your role is to:
         1. Analyze teaching plans from different AI models
         2. Compare their approaches and methodologies
@@ -184,7 +187,13 @@ class CrossAnalysisAgent:
         5. Maintain objectivity while providing valuable insights
         
         Use the available tools to perform comprehensive cross-model analysis.
+        
+        {agent_scratchpad}
         """
+        return PromptTemplate(
+            template=template,
+            input_variables=["agent_scratchpad"]
+        )
     
     # Tool implementations
     def _analyze_plan(self, plan_data: str) -> str:

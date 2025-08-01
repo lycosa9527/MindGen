@@ -250,7 +250,7 @@ def test_connection():
         
         if model_name == 'all':
             results = {}
-            for model in ['qwen', 'deepseek', 'gpt4o']:
+            for model in ['qwen', 'deepseek', 'personal_chatgpt']:
                 results[model] = llm_service.test_model_connection(model)
             return jsonify(results)
         else:

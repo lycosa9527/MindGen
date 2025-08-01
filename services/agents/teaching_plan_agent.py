@@ -54,15 +54,17 @@ class TeachingPlanAgent:
                 description="Generate teaching plan using DeepSeek LLM"
             ),
             Tool(
-                name="generate_gpt4o_plan",
-                func=self._generate_gpt4o_plan,
-                description="Generate teaching plan using GPT-4o LLM"
+                name="generate_personal_chatgpt_plan",
+                func=self._generate_personal_chatgpt_plan,
+                description="Generate teaching plan using Personal ChatGPT Server LLM"
             )
         ]
         
-        # Create agent
+        # Create agent with configurable fallback LLM
+        agent_llm = self.llm_service.get_agent_llm()
+        
         self.agent = create_openai_functions_agent(
-            llm=self.llm_service.llms['gpt4o'],
+            llm=agent_llm,
             tools=self.tools,
             prompt=self._get_agent_prompt()
         )
@@ -78,7 +80,7 @@ class TeachingPlanAgent:
         """Generate teaching plans from all three LLMs"""
         plans = {}
         
-        for model_name in ['qwen', 'deepseek', 'gpt4o']:
+        for model_name in ['qwen', 'deepseek', 'personal_chatgpt']:
             try:
                 start_time = time.time()
                 
@@ -121,7 +123,7 @@ class TeachingPlanAgent:
     
     def _get_agent_prompt(self):
         """Get agent system prompt"""
-        return """
+        template = """
         You are an expert teaching plan generator. Your role is to:
         1. Generate comprehensive teaching plans using different LLMs
         2. Ensure plans meet curriculum standards
@@ -130,7 +132,13 @@ class TeachingPlanAgent:
         5. Consider student needs and differentiation strategies
         
         Use the available tools to generate high-quality teaching plans.
+        
+        {agent_scratchpad}
         """
+        return PromptTemplate(
+            template=template,
+            input_variables=["agent_scratchpad"]
+        )
     
     # Tool implementations
     def _query_curriculum_standards(self, query: str) -> str:
@@ -171,8 +179,8 @@ class TeachingPlanAgent:
         except Exception as e:
             return f"Error generating DeepSeek plan: {str(e)}"
     
-    def _generate_gpt4o_plan(self, input_data: str) -> str:
-        """Generate plan using GPT-4o LLM"""
+    def _generate_personal_chatgpt_plan(self, input_data: str) -> str:
+        """Generate plan using Personal ChatGPT Server LLM"""
         try:
             # Parse input data
             data = eval(input_data) if isinstance(input_data, str) else input_data
@@ -180,7 +188,7 @@ class TeachingPlanAgent:
             grade = data.get('grade', '')
             objectives = data.get('objectives', '')
             
-            plan = self.llm_service.generate_teaching_plan('gpt4o', subject, grade, objectives)
+            plan = self.llm_service.generate_teaching_plan('personal_chatgpt', subject, grade, objectives)
             return plan.json()
         except Exception as e:
-            return f"Error generating GPT-4o plan: {str(e)}" 
+            return f"Error generating Personal ChatGPT plan: {str(e)}" 

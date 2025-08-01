@@ -157,8 +157,8 @@ Returns system configuration (without sensitive data).
       "model_name": "deepseek-chat",
       "timeout": 30
     },
-    "gpt4o": {
-      "api_url": "https://api.openai.com/v1/chat/completions",
+    "personal_chatgpt": {
+      "api_url": "***",
       "api_key": "***",
       "model_name": "gpt-4o",
       "timeout": 60
@@ -210,7 +210,7 @@ Tests the connection to LLM APIs.
     "response_time": 0.8,
     "message": "Connection successful"
   },
-  "gpt4o": {
+  "personal_chatgpt": {
     "status": "success",
     "response_time": 1.5,
     "message": "Connection successful"
@@ -502,7 +502,8 @@ curl http://localhost:5000/api/debug/workflow_manager
 Required environment variables:
 - `QWEN_API_KEY` - Qwen API key
 - `DEEPSEEK_API_KEY` - DeepSeek API key
-- `GPT4O_API_KEY` - OpenAI GPT-4o API key
+- `PERSONAL_CHATGPT_URL` - Personal ChatGPT Server URL
+- `PERSONAL_CHATGPT_API_KEY` - Personal ChatGPT Server API key
 - `FLASK_SECRET_KEY` - Flask session secret
 
 ### **Optional Environment Variables**

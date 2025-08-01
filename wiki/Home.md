@@ -81,7 +81,8 @@ MindGen employs a sophisticated multi-agent architecture with four core componen
 ### **Environment Variables:**
 - `QWEN_API_KEY` - Qwen API key
 - `DEEPSEEK_API_KEY` - DeepSeek API key
-- `GPT4O_API_KEY` - OpenAI GPT-4o API key
+- `PERSONAL_CHATGPT_URL` - Personal ChatGPT Server URL
+- `PERSONAL_CHATGPT_API_KEY` - Personal ChatGPT Server API key
 - `FLASK_SECRET_KEY` - Flask session secret
 
 ### **System Configuration:**

@@ -22,6 +22,15 @@ agents:
     timeout: 30
     retry_attempts: 2
 
+# LLM Fallback Configuration
+llm_fallback:
+  # Primary LLM for agents
+  primary: "personal_chatgpt"
+  # Fallback sequence if primary fails
+  fallback_sequence: ["qwen_fallback", "deepseek"]
+  # Specific fallback model for Qwen (Alibaba Cloud)
+  qwen_fallback_model: "qwen3-235b-a22b"
+
 flask:
   host: "0.0.0.0"
   port: 5000

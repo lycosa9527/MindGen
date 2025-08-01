@@ -6,7 +6,7 @@
 
 ## 🎯 Overview
 
-MindGen is a production-ready application that uses three Large Language Models (Qwen, DeepSeek, and GPT-4o) to collaboratively generate and iteratively improve teaching plans. The system employs a quality-driven approach where models cross-analyze each other's plans and refine them until quality thresholds are met.
+MindGen is a production-ready application that uses multiple Large Language Models (Qwen, DeepSeek, and Personal ChatGPT Server) to collaboratively generate and iteratively improve teaching plans. The system employs a quality-driven approach where models cross-analyze each other's plans and refine them until quality thresholds are met.
 
 ## ✨ Key Features
 
@@ -33,7 +33,7 @@ MindGen is a production-ready application that uses three Large Language Models 
 
 - **Backend**: Python 3.8+, Flask 3.0.0, Flask-SocketIO
 - **AI Framework**: LangChain with agent-based architecture
-- **LLM Integrations**: Qwen (Qianfan), DeepSeek, GPT-4o
+- **LLM Integrations**: Qwen (Alibaba Cloud), DeepSeek, Personal ChatGPT Server
 - **Frontend**: HTML5, CSS3, JavaScript, Bootstrap 5
 - **Real-time Communication**: WebSocket (Socket.IO)
 - **Configuration**: YAML-based with environment variable support
@@ -44,7 +44,7 @@ MindGen is a production-ready application that uses three Large Language Models 
 ### Prerequisites
 
 - Python 3.8 or higher
-- API keys for Qwen, DeepSeek, and GPT-4o
+- API keys for Qwen, DeepSeek, and Personal ChatGPT Server
 
 ### Installation
 
@@ -64,20 +64,19 @@ MindGen is a production-ready application that uses three Large Language Models 
    cp env.example .env
    # Edit .env with your API keys:
    # - QWEN_API_KEY: Your Qwen API key
-   # - QIANFAN_ACCESS_KEY: Your Qianfan access key  
-   # - QIANFAN_SECRET_KEY: Your Qianfan secret key
    # - DEEPSEEK_API_KEY: Your DeepSeek API key
-   # - GPT4O_API_KEY: Your OpenAI API key
+   # - PERSONAL_CHATGPT_URL: Your Personal ChatGPT Server URL
+   # - PERSONAL_CHATGPT_API_KEY: Your Personal ChatGPT Server API key
    # - FLASK_SECRET_KEY: A secure random string for Flask sessions
    ```
 
 4. **Configure API keys**
    ```bash
    # Add your API keys to .env
-   QIANFAN_ACCESS_KEY=your_qwen_access_key
-   QIANFAN_SECRET_KEY=your_qwen_secret_key
+   QWEN_API_KEY=your_qwen_api_key
    DEEPSEEK_API_KEY=your_deepseek_api_key
-   GPT4O_API_KEY=your_gpt4o_api_key
+   PERSONAL_CHATGPT_URL=your_personal_chatgpt_server_url
+   PERSONAL_CHATGPT_API_KEY=your_personal_chatgpt_api_key
    FLASK_SECRET_KEY=your_flask_secret_key
    ```
 
@@ -169,9 +168,9 @@ models:
     api_key: "${DEEPSEEK_API_KEY}"
     model_name: "deepseek-chat"
     timeout: 30
-  gpt4o:
-    api_url: "https://api.openai.com/v1/chat/completions"
-    api_key: "${GPT4O_API_KEY}"
+  personal_chatgpt:
+    api_url: "${PERSONAL_CHATGPT_URL}"
+    api_key: "${PERSONAL_CHATGPT_API_KEY}"
     model_name: "gpt-4o"
     timeout: 60
 ```

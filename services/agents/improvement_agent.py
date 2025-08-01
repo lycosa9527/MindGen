@@ -5,6 +5,7 @@ from typing import Dict, Any, List
 from langchain.agents import AgentExecutor, create_openai_functions_agent
 from langchain.tools import Tool
 from langchain.memory import ConversationBufferMemory
+from langchain.prompts import PromptTemplate
 from ..llm_service import LangChainLLMService
 
 logger = logging.getLogger(__name__)
@@ -44,9 +45,11 @@ class ImprovementAgent:
             )
         ]
         
-        # Create agent
+        # Create agent with configurable fallback LLM
+        agent_llm = self.llm_service.get_agent_llm()
+        
         self.agent = create_openai_functions_agent(
-            llm=self.llm_service.llms['gpt4o'],
+            llm=agent_llm,
             tools=self.tools,
             prompt=self._get_agent_prompt()
         )
@@ -62,7 +65,7 @@ class ImprovementAgent:
         """Improve teaching plans based on analysis feedback"""
         improved_plans = {}
         
-        for model_name in ['qwen', 'deepseek', 'gpt4o']:
+        for model_name in ['qwen', 'deepseek', 'personal_chatgpt']:
             try:
                 start_time = time.time()
                 
@@ -128,7 +131,7 @@ class ImprovementAgent:
     
     def _get_agent_prompt(self):
         """Get agent system prompt"""
-        return """
+        template = """
         You are an expert teaching plan improver. Your role is to:
         1. Improve teaching plans based on constructive feedback
         2. Enhance learning objectives and activities
@@ -137,7 +140,13 @@ class ImprovementAgent:
         5. Ensure improvements align with educational best practices
         
         Use the available tools to enhance teaching plans effectively.
+        
+        {agent_scratchpad}
         """
+        return PromptTemplate(
+            template=template,
+            input_variables=["agent_scratchpad"]
+        )
     
     # Tool implementations
     def _improve_plan(self, plan_data: str) -> str:

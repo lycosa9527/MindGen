@@ -107,7 +107,7 @@ class MindGenLogicChecker:
             
             # Check model configs
             model_configs = config_manager.get_model_configs()
-            required_models = ['qwen', 'deepseek', 'gpt4o']
+            required_models = ['qwen', 'deepseek', 'personal_chatgpt']
             for model in required_models:
                 if model not in model_configs:
                     self.errors.append(f"Missing model config: {model}")
@@ -128,8 +128,6 @@ class MindGenLogicChecker:
             'langchain',
             'langchain_core',
             'langchain_community',
-            'langchain_openai',
-            'langchain_qianfan',
             'langchain_deepseek',
             'pydantic',
             'requests',

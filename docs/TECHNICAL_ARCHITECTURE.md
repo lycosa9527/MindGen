@@ -285,9 +285,9 @@ class TeachingPlanAgent:
                 description="Generate teaching plan using DeepSeek LLM"
             ),
             Tool(
-                name="generate_gpt4o_plan",
-                func=self._generate_gpt4o_plan,
-                description="Generate teaching plan using GPT-4o LLM"
+                name="generate_personal_chatgpt_plan",
+                func=self._generate_personal_chatgpt_plan,
+                description="Generate teaching plan using Personal ChatGPT Server LLM"
             ),
             Tool(
                 name="query_curriculum_standards",
@@ -303,7 +303,7 @@ class TeachingPlanAgent:
         
         # Create agent
         self.agent = create_openai_functions_agent(
-            llm=self.llm_service.llms['gpt4o'],
+            llm=self.llm_service.llms['personal_chatgpt'],
             tools=self.tools,
             prompt=self._get_agent_prompt()
         )
@@ -319,7 +319,7 @@ class TeachingPlanAgent:
         """Generate teaching plans from all three LLMs"""
         plans = {}
         
-        for model_name in ['qwen', 'deepseek', 'gpt4o']:
+        for model_name in ['qwen', 'deepseek', 'personal_chatgpt']:
             try:
                 # Generate plan using LangChain
                 plan = self.llm_service.generate_teaching_plan(
@@ -372,9 +372,9 @@ class TeachingPlanAgent:
         """Generate plan using DeepSeek LLM"""
         return self.llm_service.generate_teaching_plan('deepseek', input_data)
     
-    def _generate_gpt4o_plan(self, input_data: str) -> str:
-        """Generate plan using GPT-4o LLM"""
-        return self.llm_service.generate_teaching_plan('gpt4o', input_data)
+    def _generate_personal_chatgpt_plan(self, input_data: str) -> str:
+        """Generate plan using Personal ChatGPT Server LLM"""
+        return self.llm_service.generate_teaching_plan('personal_chatgpt', input_data)
     
     def _query_curriculum_standards(self, query: str) -> str:
         """Query curriculum standards"""
@@ -436,7 +436,7 @@ class CrossAnalysisAgent:
         
         # Create agent
         self.agent = create_openai_functions_agent(
-            llm=self.llm_service.llms['gpt4o'],
+            llm=self.llm_service.llms['personal_chatgpt'],
             tools=self.tools,
             prompt=self._get_agent_prompt()
         )
@@ -452,7 +452,7 @@ class CrossAnalysisAgent:
         """Analyze teaching plans cross-model"""
         analysis_reports = {}
         
-        for analyst_model in ['qwen', 'deepseek', 'gpt4o']:
+        for analyst_model in ['qwen', 'deepseek', 'personal_chatgpt']:
             try:
                 # Analyze plans from other models
                 other_plans = {k: v for k, v in plans.items() if k != analyst_model}
@@ -570,7 +570,7 @@ class ImprovementAgent:
         
         # Create agent
         self.agent = create_openai_functions_agent(
-            llm=self.llm_service.llms['gpt4o'],
+            llm=self.llm_service.llms['personal_chatgpt'],
             tools=self.tools,
             prompt=self._get_agent_prompt()
         )
@@ -586,7 +586,7 @@ class ImprovementAgent:
         """Improve teaching plans based on analysis feedback"""
         improved_plans = {}
         
-        for model_name in ['qwen', 'deepseek', 'gpt4o']:
+        for model_name in ['qwen', 'deepseek', 'personal_chatgpt']:
             try:
                 # Get feedback for this model
                 feedback = self._extract_feedback_for_model(model_name, analysis_reports)
@@ -720,7 +720,7 @@ class KnowledgeMemoryAgent:
         
         # Create agent
         self.agent = create_openai_functions_agent(
-            llm=self.llm_service.llms['gpt4o'],
+            llm=self.llm_service.llms['personal_chatgpt'],
             tools=self.tools,
             prompt=self._get_agent_prompt()
         )
@@ -884,9 +884,9 @@ models:
     retry_attempts: 3
     retry_delay: 1
     
-  gpt4o:
-    api_url: "https://api.openai.com/v1/chat/completions"
-    api_key: "${GPT4O_API_KEY}"
+  personal_chatgpt:
+    api_url: "${PERSONAL_CHATGPT_URL}"
+    api_key: "${PERSONAL_CHATGPT_API_KEY}"
     model_name: "gpt-4o"
     max_tokens: 4000
     temperature: 0.7
@@ -983,12 +983,12 @@ class ErrorHandler:
     def _implement_fallback(self, model_name: str, error_info: Dict[str, Any]) -> Dict[str, Any]:
         """Implement fallback strategy for LLM failures"""
         fallback_models = {
-            'qwen': 'gpt4o',
+            'qwen': 'personal_chatgpt',
             'deepseek': 'qwen',
-            'gpt4o': 'deepseek'
+            'personal_chatgpt': 'deepseek'
         }
         
-        fallback_model = fallback_models.get(model_name, 'gpt4o')
+        fallback_model = fallback_models.get(model_name, 'personal_chatgpt')
         
         return {
             'status': 'fallback',

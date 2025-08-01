@@ -133,9 +133,9 @@ graph TD
 - **LangChain Experimental**: Experimental features and capabilities
 
 ### **LLM Integrations**
-- **Qwen (Qianfan)**: Chinese language model with strong educational capabilities
+- **Qwen (Alibaba Cloud)**: Chinese language model with strong educational capabilities
 - **DeepSeek**: Advanced reasoning and analysis capabilities
-- **GPT-4o**: OpenAI's latest model with comprehensive understanding
+- **Personal ChatGPT Server**: OpenAI-compatible server for GPT-4o functionality
 
 ### **Data Management**
 - **Pydantic**: Structured data validation and serialization
@@ -272,9 +272,9 @@ models:
     api_key: "${DEEPSEEK_API_KEY}"
     model_name: "deepseek-chat"
     timeout: 30
-  gpt4o:
-    api_url: "https://api.openai.com/v1/chat/completions"
-    api_key: "${GPT4O_API_KEY}"
+  personal_chatgpt:
+    api_url: "${PERSONAL_CHATGPT_URL}"
+    api_key: "${PERSONAL_CHATGPT_API_KEY}"
     model_name: "gpt-4o"
     timeout: 60
 ```
