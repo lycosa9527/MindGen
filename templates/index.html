@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MindGen - AI-Powered Teaching Plan Generator</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --accent-color: #e74c3c;
+            --success-color: #27ae60;
+            --warning-color: #f39c12;
+            --light-bg: #f8f9fa;
+            --dark-bg: #2c3e50;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .main-container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            margin: 20px auto;
+            max-width: 1200px;
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+        
+        .content {
+            padding: 40px;
+        }
+        
+        .form-section {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+        }
+        
+        .form-label {
+            font-weight: 600;
+            color: var(--primary-color);
+            margin-bottom: 8px;
+        }
+        
+        .form-control, .form-select {
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            padding: 12px 15px;
+            transition: all 0.3s ease;
+        }
+        
+        .form-control:focus, .form-select:focus {
+            border-color: var(--secondary-color);
+            box-shadow: 0 0 0 0.2rem rgba(52, 152, 219, 0.25);
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, var(--secondary-color), #2980b9);
+            border: none;
+            border-radius: 10px;
+            padding: 12px 30px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(52, 152, 219, 0.3);
+        }
+        
+        .progress-section {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+            display: none;
+        }
+        
+        .progress-container {
+            margin-bottom: 20px;
+        }
+        
+        .progress-bar {
+            background: #e9ecef;
+            border-radius: 10px;
+            height: 20px;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .progress-fill {
+            background: linear-gradient(90deg, var(--success-color), var(--secondary-color));
+            height: 100%;
+            border-radius: 10px;
+            transition: width 0.5s ease;
+            position: relative;
+        }
+        
+        .progress-fill::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            animation: shimmer 2s infinite;
+        }
+        
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+        
+        .status-update {
+            background: #f8f9fa;
+            border-left: 4px solid var(--secondary-color);
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            animation: slideIn 0.3s ease;
+        }
+        
+        .status-update.alert-success {
+            border-left-color: var(--success-color);
+        }
+        
+        .status-update.alert-warning {
+            border-left-color: var(--warning-color);
+        }
+        
+        .status-update.alert-danger {
+            border-left-color: var(--accent-color);
+        }
+        
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .results-section {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            display: none;
+        }
+        
+        .model-card {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-left: 4px solid var(--secondary-color);
+        }
+        
+        .model-card.success {
+            border-left-color: var(--success-color);
+        }
+        
+        .model-card.error {
+            border-left-color: var(--accent-color);
+        }
+        
+        .quality-score {
+            display: inline-block;
+            background: var(--success-color);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+        
+        .iteration-badge {
+            background: var(--secondary-color);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            margin-right: 10px;
+        }
+        
+        .loading-spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid var(--secondary-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-right: 10px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .footer {
+            background: var(--dark-bg);
+            color: white;
+            text-align: center;
+            padding: 20px;
+            margin-top: 40px;
+        }
+        
+        .feature-icon {
+            font-size: 2rem;
+            color: var(--secondary-color);
+            margin-bottom: 15px;
+        }
+        
+        .features {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+        
+        .feature-card {
+            text-align: center;
+            padding: 20px;
+            border-radius: 10px;
+            transition: transform 0.3s ease;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-5px);
+        }
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <!-- Header -->
+        <div class="header">
+            <h1><i class="fas fa-brain"></i> MindGen</h1>
+            <p>AI-Powered Teaching Plan Generator</p>
+            <small>Collaborative AI assistance for creating superior teaching plans</small>
+        </div>
+        
+        <!-- Content -->
+        <div class="content">
+            <!-- Features Section -->
+            <div class="features">
+                <div class="row">
+                    <div class="col-md-3">
+                        <div class="feature-card">
+                            <div class="feature-icon">
+                                <i class="fas fa-robot"></i>
+                            </div>
+                            <h5>Multi-Agent AI</h5>
+                            <p>Three LLMs collaborate to generate and improve teaching plans</p>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="feature-card">
+                            <div class="feature-icon">
+                                <i class="fas fa-sync-alt"></i>
+                            </div>
+                            <h5>Iterative Improvement</h5>
+                            <p>Cross-analysis and refinement until quality thresholds are met</p>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="feature-card">
+                            <div class="feature-icon">
+                                <i class="fas fa-chart-line"></i>
+                            </div>
+                            <h5>Quality-Driven</h5>
+                            <p>Automatic convergence when quality standards are achieved</p>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="feature-card">
+                            <div class="feature-icon">
+                                <i class="fas fa-eye"></i>
+                            </div>
+                            <h5>Real-Time Monitoring</h5>
+                            <p>Live progress tracking and detailed status updates</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Input Form -->
+            <div class="form-section">
+                <h3><i class="fas fa-edit"></i> Generate Teaching Plan</h3>
+                <form id="planForm">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <label for="subject" class="form-label">Subject</label>
+                            <input type="text" class="form-control" id="subject" required 
+                                   placeholder="e.g., Mathematics, Science, English">
+                        </div>
+                        <div class="col-md-4">
+                            <label for="grade" class="form-label">Grade Level</label>
+                            <select class="form-select" id="grade" required>
+                                <option value="">Select Grade</option>
+                                <option value="K-2">K-2 (Early Elementary)</option>
+                                <option value="3-5">3-5 (Upper Elementary)</option>
+                                <option value="6-8">6-8 (Middle School)</option>
+                                <option value="9-12">9-12 (High School)</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="maxRounds" class="form-label">Improvement Rounds</label>
+                            <select class="form-select" id="maxRounds">
+                                <option value="1">1 Round (Quick)</option>
+                                <option value="2">2 Rounds</option>
+                                <option value="3" selected>3 Rounds (Recommended)</option>
+                                <option value="5">5 Rounds (Thorough)</option>
+                                <option value="10">10 Rounds (Maximum)</option>
+                            </select>
+                            <small class="form-text text-muted">More rounds = better quality but longer time</small>
+                        </div>
+                    </div>
+                    <div class="row mt-3">
+                        <div class="col-12">
+                            <label for="objectives" class="form-label">Learning Objectives</label>
+                            <textarea class="form-control" id="objectives" rows="4" required
+                                      placeholder="Describe the learning objectives for this lesson..."></textarea>
+                        </div>
+                    </div>
+                    <div class="row mt-4">
+                        <div class="col-12 text-center">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="fas fa-magic"></i> Generate Teaching Plan
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            
+            <!-- Progress Section -->
+            <div id="progressSection" class="progress-section">
+                <h3><i class="fas fa-cogs"></i> Generating Your Teaching Plan...</h3>
+                
+                <!-- Overall Progress -->
+                <div class="progress-container">
+                    <h5>Overall Progress</h5>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+                    </div>
+                    <small id="progressText">0% Complete</small>
+                </div>
+                
+                <!-- Current Round Progress -->
+                <div class="progress-container">
+                    <h5>Current Round</h5>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="roundProgressFill" style="width: 0%"></div>
+                    </div>
+                    <small id="roundProgressText">Round 0 of 0</small>
+                </div>
+                
+                <!-- Status Updates -->
+                <div id="statusUpdates"></div>
+            </div>
+            
+            <!-- Results Section -->
+            <div id="resultsSection" class="results-section">
+                <h3><i class="fas fa-check-circle"></i> Final Teaching Plan</h3>
+                <div id="finalPlan"></div>
+            </div>
+        </div>
+        
+        <!-- Footer -->
+        <div class="footer">
+            <p>&copy; 2025 MindGen - AI-Powered Teaching Plan Generator</p>
+            <small>Version v0.1.0 - Proof of Concept</small>
+        </div>
+    </div>
+    
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.2/socket.io.js"></script>
+    <script>
+        let socket;
+        let currentIteration = 0;
+        let maxIterations = 3;
+        let overallProgress = 0;
+        
+        // Initialize Socket.IO connection
+        document.addEventListener('DOMContentLoaded', function() {
+            socket = io();
+            setupSocketListeners();
+        });
+        
+        // Form submission
+        document.getElementById('planForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const formData = {
+                subject: document.getElementById('subject').value,
+                grade: document.getElementById('grade').value,
+                objectives: document.getElementById('objectives').value,
+                max_rounds: parseInt(document.getElementById('maxRounds').value)
+            };
+            
+            // Show progress section
+            document.getElementById('progressSection').style.display = 'block';
+            document.getElementById('resultsSection').style.display = 'none';
+            resetProgress();
+            
+            // Start workflow
+            socket.emit('start_workflow', formData);
+        });
+        
+        function setupSocketListeners() {
+            socket.on('connect', function() {
+                addStatusUpdate('Connected to MindGen system', 'info');
+            });
+            
+            socket.on('workflow_started', function(data) {
+                addStatusUpdate('Workflow started successfully', 'success');
+                maxIterations = data.max_rounds;
+            });
+            
+            socket.on('iteration_start', function(data) {
+                currentIteration = data.iteration;
+                updateRoundProgress(currentIteration, maxIterations);
+                
+                if (data.step === 'initial_generation') {
+                    addStatusUpdate('Generating initial teaching plans...', 'info');
+                    overallProgress = 10;
+                } else {
+                    addStatusUpdate(`Starting iteration ${data.iteration} of ${data.max_iterations}...`, 'info');
+                    overallProgress = 10 + (currentIteration * 80 / maxIterations);
+                }
+                updateOverallProgress(overallProgress);
+            });
+            
+            socket.on('status_update', function(data) {
+                addStatusUpdate(data.message, 'info');
+                
+                if (data.step === 'cross_analysis') {
+                    overallProgress = 10 + (currentIteration * 80 / maxIterations) + 20;
+                } else if (data.step === 'improvement') {
+                    overallProgress = 10 + (currentIteration * 80 / maxIterations) + 40;
+                } else if (data.step === 'final_generation') {
+                    overallProgress = 95;
+                }
+                updateOverallProgress(overallProgress);
+            });
+            
+            socket.on('plan_generated', function(data) {
+                addStatusUpdate(`${data.model} plan generated (${data.duration.toFixed(2)}s)`, 'success');
+            });
+            
+            socket.on('analysis_complete', function(data) {
+                addStatusUpdate(`${data.analyst} analysis completed`, 'warning');
+            });
+            
+            socket.on('plan_improved', function(data) {
+                addStatusUpdate(`${data.model} plan improved`, 'success');
+            });
+            
+            socket.on('quality_update', function(data) {
+                addStatusUpdate(`Quality score: ${(data.quality_score * 100).toFixed(1)}%`, 'info');
+            });
+            
+            socket.on('quality_threshold_met', function(data) {
+                addStatusUpdate(`Quality threshold met! Score: ${(data.quality_score * 100).toFixed(1)}%`, 'success');
+            });
+            
+            socket.on('convergence_detected', function(data) {
+                addStatusUpdate('Quality has converged, stopping iterations', 'warning');
+            });
+            
+            socket.on('iteration_complete', function(data) {
+                addStatusUpdate(data.message, 'success');
+                overallProgress = 10 + (data.iteration * 80 / maxIterations) + 60;
+                updateOverallProgress(overallProgress);
+            });
+            
+            socket.on('workflow_complete', function(data) {
+                document.getElementById('finalPlan').innerHTML = `
+                    <div class="alert alert-success">
+                        <h5><i class="fas fa-star"></i> Final Teaching Plan</h5>
+                        <p><strong>Model:</strong> ${data.final_plan.model}</p>
+                        <p><strong>Quality Score:</strong> <span class="quality-score">${(data.final_quality_score * 100).toFixed(1)}%</span></p>
+                        <p><strong>Iterations Completed:</strong> ${data.iterations_completed}</p>
+                        <hr>
+                        <h6>Plan Content:</h6>
+                        <pre style="background: #f8f9fa; padding: 15px; border-radius: 5px; white-space: pre-wrap;">${data.final_plan.content}</pre>
+                    </div>
+                `;
+                document.getElementById('resultsSection').style.display = 'block';
+                
+                updateOverallProgress(100);
+                addStatusUpdate('Teaching plan generation completed successfully!', 'success');
+            });
+            
+            socket.on('workflow_error', function(data) {
+                addStatusUpdate(`Error: ${data.message}`, 'danger');
+            });
+            
+            socket.on('log', function(logMessage) {
+                console.log('System Log:', logMessage);
+            });
+            
+            socket.on('disconnect', function() {
+                addStatusUpdate('Connection lost. Please refresh the page.', 'warning');
+            });
+        }
+        
+        function resetProgress() {
+            document.getElementById('progressFill').style.width = '0%';
+            document.getElementById('roundProgressFill').style.width = '0%';
+            document.getElementById('progressText').textContent = '0% Complete';
+            document.getElementById('roundProgressText').textContent = 'Round 0 of 0';
+            document.getElementById('statusUpdates').innerHTML = '';
+        }
+        
+        function updateRoundProgress(currentRound, maxRounds) {
+            const roundProgressFill = document.getElementById('roundProgressFill');
+            const roundProgressText = document.getElementById('roundProgressText');
+            
+            const roundPercentage = (currentRound / maxRounds) * 100;
+            roundProgressFill.style.width = `${Math.min(roundPercentage, 100)}%`;
+            roundProgressText.textContent = `Round ${currentRound} of ${maxRounds}`;
+        }
+        
+        function updateOverallProgress(progress) {
+            const progressFill = document.getElementById('progressFill');
+            const progressText = document.getElementById('progressText');
+            
+            progressFill.style.width = `${Math.min(progress, 100)}%`;
+            progressText.textContent = `${Math.round(progress)}% Complete`;
+        }
+        
+        function addStatusUpdate(message, type) {
+            const statusUpdates = document.getElementById('statusUpdates');
+            const update = document.createElement('div');
+            update.className = `status-update alert alert-${type}`;
+            
+            const icon = type === 'success' ? 'check-circle' : 
+                        type === 'warning' ? 'exclamation-triangle' : 
+                        type === 'danger' ? 'times-circle' : 'info-circle';
+            
+            update.innerHTML = `
+                <i class="fas fa-${icon}"></i> ${message}
+                <small class="text-muted float-end">${new Date().toLocaleTimeString()}</small>
+            `;
+            
+            statusUpdates.appendChild(update);
+            statusUpdates.scrollTop = statusUpdates.scrollHeight;
+        }
+    </script>
+</body>
+</html> 

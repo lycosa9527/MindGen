@@ -1,0 +1,35 @@
+# config/system.yaml
+system:
+  max_iterations: 3
+  quality_threshold: 0.8
+  timeout_per_round: 300
+  debug_mode: false
+  
+agents:
+  teaching_plan:
+    timeout: 60
+    retry_attempts: 3
+    
+  cross_analysis:
+    timeout: 90
+    retry_attempts: 2
+    
+  improvement:
+    timeout: 60
+    retry_attempts: 3
+    
+  knowledge_memory:
+    timeout: 30
+    retry_attempts: 2
+
+flask:
+  host: "0.0.0.0"
+  port: 5000
+  debug: false
+  secret_key: "${FLASK_SECRET_KEY}"
+
+logging:
+  level: "INFO"
+  file: "logs/mindgen.log"
+  max_size: "10MB"
+  backup_count: 5 
